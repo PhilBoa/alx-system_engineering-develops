@@ -1,2 +1,2 @@
 #!/bin/bash
-printf %s'/' {a..z}{a..} | grep -v ''
+printf %s'/' {a..z}{a..} | grep -v 'oo'
