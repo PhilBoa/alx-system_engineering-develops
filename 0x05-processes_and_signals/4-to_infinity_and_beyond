@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Bash script that displays "To infinity and beyond" indefinitely
+# The script keeps printing till CTRL + c is pressed
+
+while true
+do
+	echo "To infinity and beyond"
+	sleep 2
+done
