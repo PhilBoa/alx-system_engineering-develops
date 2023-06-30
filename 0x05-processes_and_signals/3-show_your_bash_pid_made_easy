@@ -5,9 +5,9 @@
 pids=$(pgrep -f bash)
 for pid in $pids
 do
-	if [ -f "/proc/$pid/cmdline" ]
-	then
-		pid_name=$(tr -d '\0' < "/proc/$pid/cmdline")
-		echo "$pid $pid_name"
-	fi
+if [ -f "/proc/$pid/cmdline" ]
+then
+pid_name=$(tr -d '\0' < "/proc/$pid/cmdline")
+echo "$pid $pid_name"
+fi
 done
