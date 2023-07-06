@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Bash script that displays all active IPv4 IPs on the machine it's executed on.
+
+# Retrieve IPv4 addresses
+ipv4=$(hostname -I | awk '{for (i=1; i<=NF; i++) if ($i ~ /\./) print $i}')
+
+# Replace spaces with newlines
+ipv4=${ipv4// /$'\n'}
+
+echo "$ipv4"
