@@ -8,4 +8,4 @@
 # hbtttn
 # hbttttn
 
-puts ARGV[0].scan(/\bh(?!bon)\w+\b/).join
+puts ARGV[0].scan(/hbt*n/).join
