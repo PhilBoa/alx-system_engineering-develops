@@ -1,0 +1,5 @@
+HostName 54.172.10.28
+User ubuntu
+IdentityFile ~/.ssh/school
+PreferredAuthentications publickey
+PasswordAuthentication no
