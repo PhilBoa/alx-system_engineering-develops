@@ -1,38 +1,54 @@
-# This Puppet manifest configures Nginx and performs a 301 redirection
+# installs and configures nginx
 
-package { 'nginx':
-  ensure => installed,
+package {'nginx':
+    ensure => 'present',
 }
 
-service { 'nginx':
-  ensure => running,
-  enable => true,
+
+file {'index":
+    ensure  => 'file',
+    path    => '/var/www/html/index.html',
+    content => 'Hello World!'
 }
 
-file { '/var/www/html/index.html':
-  content => 'Hello World!',
+file {'404":
+    ensure  => 'file',
+    path    => '/var/www/html/404.html',
+    content => 'Ceci n\'est pas une page\n'
 }
 
-file { '/etc/nginx/sites-available/default':
-  source => 'puppet:///etc/nginx/nginx.conf',
-  notify => Service['nginx'],
+file {'default":
+    ensure  => 'file',
+    path    => '/etc/nginx/sites-enabled/default',
+    content => '
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name _;
+
+        location /redirect_me {
+                return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+        }
+
+        location / {
+                try_files \$uri \$uri/ =404;
+        }
+
+        error_page 404 /404.html;
+        location = /404.html {
+                root /var/www/html;
+                internal;
+        }
+}',
+    notify  => Service['nginx']
 }
 
-file { '/etc/nginx/sites-enabled/default':
-  ensure => 'link',
-  target => '/etc/nginx/sites-available/default',
-  notify => Service['nginx'],
-}
-
-exec { 'disable_default_site':
-  command => 'rm /etc/nginx/sites-enabled/default',
-  onlyif  => 'test -L /etc/nginx/sites-enabled/default',
-  notify  => Service['nginx'],
-}
-
-exec { 'redirect_config':
-  command => '/bin/echo "location /redirect_me { return 301 http://innovateweb.tech; }" >> /etc/nginx/sites-available/default',
-  unless  => '/bin/grep -q "location /redirect_me { return 301 http://innovateweb.tech; }" /etc/nginx/sites-available/default',
-  require => File['/etc/nginx/sites-available/default'],
-  notify  => Service['nginx'],
-}
+service {'nginx':
+    ensure  => 'running',
+    enable  => 'true',
+    require => File['default']
+}                                                               
