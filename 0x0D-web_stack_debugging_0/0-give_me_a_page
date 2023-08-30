@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# This script Docker container with Apache and fix the Apache issue
+container_id=$(docker run -d -it holbertonschool/265-0)
+docker exec "$container_id" /bin/bash -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf && service apache2 start"
