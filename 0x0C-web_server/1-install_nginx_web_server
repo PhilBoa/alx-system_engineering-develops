@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# install nginx server and add content to index.html
+# This script install nginx on a server and return a page that contains the
+# string Hello World! when querying Nginx at its root / with a GET request
+# using curl
 
-sudo apt -y update
-sudo apt -y upgrade
-sudo apt -y install nginx
-sudo service nginx start
-sudo chown -R "$USER":"$USER" /var/www/html
-sudo chmod -R 755 /var/www
-sudo echo 'Hello World!' | tee /var/www/html/index.nginx-debian.html
+apt-get update
+apt-get install -y nginx
+
+echo "Hello World!" > /var/www/html/index.html
+sed -i 's/listen 80 default_server;/listen 80;/' /etc/nginx/sites-available/default
+service nginx restart
