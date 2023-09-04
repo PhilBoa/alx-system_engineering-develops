@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Create a custom configuration file to add the custom header
+apt-get update
+apt-get install -y nginx
+echo "Hello World!" > /var/www/html/index.html
+sed -i 's/listen 80 default_server;/listen 80;/' /etc/nginx/sites-available/default
+SERVER=\
+"server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	root /var/www/html;
+	index index.html index.htm index.nginx-debian.html;
+	server_name _;
+	location / {
+		try_files \$uri \$uri/ =404;
+	}
+	if (\$request_filename ~ redirect_me){
+		rewrite ^ http://innovateweb.tech permanent;
+	}
+}"
+
+bash -c "echo -e '$SERVER' > /etc/nginx/sites-enabled/default"
+config=\
+"server {
+		listen 80 default_server;
+		listen [::]:80 default_server;
+		root /var/www/html;
+		index index.html index.htm index.nginx-debian.html;
+		server_name _;
+        location / {
+					try_files \$uri \$uri/ =404;
+		}
+		error_page 404 /404.html;
+		location  /404.html {
+			internal;
+		}
+
+		if (\$request_filename ~ redirect_me){
+			rewrite ^ http://innovateweb.tech permanent;
+		}
+}
+"
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+echo "$config" > /etc/nginx/sites-available/default
+
+echo "add_header X-Served-By \$hostname;" > /etc/nginx/conf.d/custom_header.conf
+service nginx restart
