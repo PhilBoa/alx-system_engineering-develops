@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# This script displays DNS information for a specified subdomain or default subdomains of a domain.
+
+# Function to display DNS information for a subdomain
+display_dns_info() {
+	local domain="$1"
+	local subdomain="$2"
+
+	# Use dig to retrieve DNS information
+	dns_info=$(dig "$subdomain.$domain" | awk '/ANSWER SECTION:/ {getline; print}')
+	if [ -n "$dns_info" ]; then
+		local record_type
+		record_type=$(echo "$dns_info" | awk '{print $4}')
+		local destination
+		destination=$(echo "$dns_info" | awk '{print $5}')
+		echo "The subdomain $subdomain is a $record_type record and points to $destination"
+	else
+		echo "No DNS information found for $subdomain.$domain"
+	fi
+}
+
+# Main script logic
+if [ "$#" -eq 1 ]; then
+	# Display information for default subdomains
+	domain="$1"
+	subdomains=("www" "lb-01" "web-01" "web-02")
+
+	for subdomain in "${subdomains[@]}"; do
+		display_dns_info "$domain" "$subdomain"
+	done
+elif [ "$#" -eq 2 ]; then
+	# Display information for the specified subdomain
+	domain="$1"
+	subdomain="$2"
+	display_dns_info "$domain" "$subdomain"
+else
+	echo "Usage: $0 <domain> [subdomain]"
+fi
