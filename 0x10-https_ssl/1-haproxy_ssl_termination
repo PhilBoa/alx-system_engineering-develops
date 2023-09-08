@@ -1,0 +1,22 @@
+global
+    # Other global settings...
+
+defaults
+    # Other default settings...
+
+frontend www-http
+    bind *:80
+    mode http
+    option forwardfor
+    reqadd X-Forwarded-Proto:\ http
+    default_backend www-backend
+
+frontend www-https
+    bind *:443 ssl crt /etc/letsencrypt/live/www.innovateweb.tech/fullchain.pem
+    mode http
+    reqadd X-Forwarded-Proto:\ https
+    default_backend www-backend
+
+backend www-backend
+    mode http
+    server 100.25.111.173 100.25.111.173:80 check
