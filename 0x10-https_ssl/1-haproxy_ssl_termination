@@ -1,22 +1,27 @@
 global
-    # Other global settings...
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    maxconn 4096
+    user haproxy
+    group haproxy
 
 defaults
-    # Other default settings...
-
-frontend www-http
-    bind *:80
+    log global
     mode http
+    option httplog
+    option dontlognull
     option forwardfor
-    reqadd X-Forwarded-Proto:\ http
-    default_backend www-backend
+    option http-server-close
+    timeout connect 5000
+    timeout client 50000
+    timeout server 50000
 
-frontend www-https
-    bind *:443 ssl crt /etc/letsencrypt/live/www.innovateweb.tech/fullchain.pem
-    mode http
+frontend www_frontend
+    bind *:80
+    bind *:443 ssl crt /etc/haproxy/ssl/www.holberton.online.pem  # Replace with your SSL certificate path
     reqadd X-Forwarded-Proto:\ https
-    default_backend www-backend
+    default_backend www_backend
 
-backend www-backend
-    mode http
-    server 100.25.111.173 100.25.111.173:80 check
+backend www_backend
+    server web-01 web-01.paboa.tech:80 check
+    server web-02 web-02.paboa.tech:80 check
