@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Bash script to reload Gunicorn in a graceful way.
+
+# Get the process IDs of the current Gunicorn workers
+worker_pids=$(pgrep gunicorn)
+
+# Gracefully shut down the existing workers
+for pid in $worker_pids
+do
+    echo "Gracefully shutting down worker: $pid"
+    kill -s TERM "$pid"
+    sleep 2
+done
+
+# Start new Gunicorn workers with the updated code
+/etc/systemd/system/gunicorn.service --bind 0.0.0.0:8001 --workers 4 web_flask.0-hello_route:app
+
+echo "Gunicorn reload completed successfully!"
